@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import AxiosInstance, { host } from "../AxiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { insert_user } from "../redux/action";
@@ -21,7 +21,6 @@ import { GENDERS } from "../redux/constants";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { green } from "@mui/material/colors";
-
 import Fab from "@mui/material/Fab";
 import CheckIcon from "@mui/icons-material/Check";
 import SaveIcon from "@mui/icons-material/Save";
@@ -156,6 +155,9 @@ const MyAccount = () => {
               }}
             />
             <Typography variant="h6">Profile: {user.email}</Typography>
+            <Typography variant="p">
+              <Link to="/change-password">Change Password</Link>
+            </Typography>
             <Grid container spacing={2} sx={{ marginTop: 2 }}>
               <Grid item xs={12} sm={6}>
                 <TextField

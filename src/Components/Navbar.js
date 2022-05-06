@@ -23,8 +23,8 @@ const UserMenu = [
 ];
 
 const NavMenu = [
-  { name: "Helps", to: "/helps" },
-  { name: "Categories", to: "/categories" },
+  // { name: "Helps", to: "/helps" },
+  // { name: "Categories", to: "/categories" },
 ];
 
 const Navbar = ({ isAuthenticated }) => {
@@ -63,7 +63,7 @@ const Navbar = ({ isAuthenticated }) => {
             textDecoration: "none",
           }}
         >
-          Sharing is Caring
+          Expense Tracker
         </Typography>
         <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
           <IconButton
@@ -121,7 +121,7 @@ const Navbar = ({ isAuthenticated }) => {
             display: { xs: "flex", md: "none" },
           }}
         >
-          Sharing is Caring
+          Expense Tracker
         </Typography>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
           {NavMenu.map((menu) => {

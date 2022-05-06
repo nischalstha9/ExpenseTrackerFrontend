@@ -18,11 +18,14 @@ import { toast } from "react-toastify";
 import { Helmet } from "react-helmet";
 import { useQuery } from "../Components/Utils";
 
-export default function SetNewPassword() {
+export default function ChangePassword() {
   const history = useHistory();
   const query = useQuery();
 
-  const passwordSetSchema = Yup.object().shape({
+  const passwordChangeSchema = Yup.object().shape({
+    old_password: Yup.string()
+      .min(8, "Your password length must be atlease 8 and alphanumeric")
+      .required("Old Password cannot be empty!"),
     new_password1: Yup.string()
       .min(8, "Your password length must be atlease 8 and alphanumeric")
       .required("Password cannot be empty!"),
@@ -35,22 +38,18 @@ export default function SetNewPassword() {
 
   const passwordSetForm = useFormik({
     initialValues: {
-      token: query.get("token"),
-      identifier: query.get("identifier"),
-      type: 1,
+      old_password: "",
       new_password1: "",
       new_password2: "",
     },
     onSubmit: (values, { setSubmitting }) => {
-      AxiosInstance.post("/auth/user/password/reset/", values)
+      AxiosInstance.post("auth/user/password/change/", values)
         .then((resp) => {
-          toast.success(
-            "Your password has been reset successfully. You can login now.",
-            {
-              position: toast.POSITION.BOTTOM_CENTER,
-            }
-          );
-          history.push("/login");
+          toast.success("Your password has been changed successfully.", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+          history.push("/");
+          // passwordSetForm.resetForm();
         })
         .catch((err) => {
           toast.error(Object.values(err.response.data)[0][0], {
@@ -58,14 +57,13 @@ export default function SetNewPassword() {
           });
         });
       setSubmitting(false);
-      passwordSetForm.resetForm();
     },
-    validationSchema: passwordSetSchema,
+    validationSchema: passwordChangeSchema,
   });
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Set New Password | Sharing is Caring</title>
+        <title>Change Password | Sharing is Caring</title>
       </Helmet>
       <Paper
         sx={{
@@ -86,7 +84,7 @@ export default function SetNewPassword() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Reset Password
+            Change Password
           </Typography>
           <Box component="form" noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -94,8 +92,28 @@ export default function SetNewPassword() {
                 <TextField
                   required
                   fullWidth
+                  name="old_password"
+                  label="Old Password"
+                  type="password"
+                  id="old_password"
+                  onChange={passwordSetForm.handleChange}
+                  value={passwordSetForm.values.old_password}
+                  error={
+                    passwordSetForm.touched.old_password &&
+                    Boolean(passwordSetForm.errors.old_password)
+                  }
+                  helperText={
+                    passwordSetForm.touched.old_password &&
+                    passwordSetForm.errors.old_password
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
                   name="new_password1"
-                  label="Password"
+                  label="New Password"
                   type="password"
                   id="new_password1"
                   onChange={passwordSetForm.handleChange}
@@ -115,7 +133,7 @@ export default function SetNewPassword() {
                   required
                   fullWidth
                   name="new_password2"
-                  label="Confirm Password"
+                  label="Confirm New Password"
                   type="password"
                   id="new_password2"
                   onChange={passwordSetForm.handleChange}
@@ -140,13 +158,8 @@ export default function SetNewPassword() {
               onClick={passwordSetForm.handleSubmit}
               disabled={passwordSetForm.isSubmitting}
             >
-              Save new password
+              Change Password
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                Need an account? <Link to="/signup">Sign Up</Link>
-              </Grid>
-            </Grid>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link to="/forget-password">Forget Password?</Link>
