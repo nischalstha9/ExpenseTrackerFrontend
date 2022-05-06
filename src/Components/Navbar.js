@@ -14,13 +14,9 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProfileCard from "./ProfileCard";
 import { host } from "../AxiosInstance";
+import { green } from "@mui/material/colors";
 
-const UserMenu = [
-  { name: "Create New Help", to: "/create-help" },
-  { name: "My Helps", to: "/my-helps" },
-  { name: "Favorite Helps", to: "/my-liked-helps" },
-  { name: "Logout", to: "/logout" },
-];
+const UserMenu = [{ name: "Logout ?", to: "/logout" }];
 
 const NavMenu = [
   // { name: "Helps", to: "/helps" },
@@ -137,6 +133,7 @@ const Navbar = ({ isAuthenticated }) => {
             <Tooltip title="User Actions">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
+                  sx={{ bgcolor: green[500] }}
                   alt={user.first_name || user.email}
                   src={host + user.avatar_path}
                 />

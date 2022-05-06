@@ -1,65 +1,141 @@
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import {
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
-import AccountBookCard from "../Components/AccountBookCard";
-import HelpFilter from "../Components/HelpFilter";
 import AxiosInstance from "../AxiosInstance";
-import CustomPagination from "../Components/CustomPagination";
-import {
-  HELP_FILTER_HAS_SEARCH,
-  HELP_FILTER_HAS_CATEGORY,
-  HELP_PAGINATION_ITEM_LIMIT,
-} from "../redux/constants";
 import { Helmet } from "react-helmet";
-import MostLikedHelps from "../Components/MostLikedHelps";
 import { Link } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
+import { useParams } from "react-router-dom";
+import TransactionTable from "../Components/TransactionTable";
+import CustomTablePagination from "../Components/CustomTablePagination";
+import AddTransaction from "../Components/AddTransaction";
+import Fab from "@mui/material/Fab";
+import { Add as AddIcon } from "@mui/icons-material";
+import { green } from "@mui/material/colors";
 
-const HelpsList = () => {
-  const [accountBooks, setAccountBooks] = React.useState([]);
+const AccountBookDetail = () => {
+  const { account_book_id } = useParams();
+  const [accountBook, setAccountBook] = React.useState({});
+  const [transactions, setTransactions] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [page, setPage] = React.useState(0);
-  const [dataCount, setDataCount] = React.useState(0);
-  const limit = HELP_PAGINATION_ITEM_LIMIT;
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [dataCount, setdataCount] = React.useState(0);
+  const [refresher, setRefresher] = useState(0);
+
+  const initialFilter = Object.freeze({
+    type: "",
+    sdate: "",
+    edate: "",
+    search: "",
+  });
+  const [filterForm, setFilterForm] = React.useState(initialFilter);
+  const handleFormChange = (e) => {
+    setPage(0);
+    let value = e.target.value;
+    if (e.target.name === "sdate" || e.target.name === "edate") {
+      let date;
+      try {
+        date = new Date(value).toISOString();
+      } catch {
+        date = "";
+      }
+      setFilterForm({
+        ...filterForm,
+        [e.target.name]: date,
+      });
+    } else {
+      setFilterForm({
+        ...filterForm,
+        [e.target.name]: value.trim(),
+      });
+    }
+  };
 
   const handleChangePage = (event, newPage) => {
     window.scroll(0, 500);
     setPage(newPage);
   };
 
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+  };
+
   useEffect(() => {
     setLoading(true);
-    AxiosInstance.get(
-      `/expensetracker/account-books/?search=${searchQuery}&limit=${limit}&offset=${
-        page * limit
-      }&ordering=-created_at`
-    )
+    AxiosInstance.get(`/expensetracker/account-books/${account_book_id}/`)
       .then((resp) => {
-        setAccountBooks(resp.data.results);
-        setDataCount(resp.data.count);
+        setAccountBook(resp.data);
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [searchQuery, limit, page]);
+  }, [refresher]);
 
-  return (
+  let url = `expensetracker/account-books/${account_book_id}/transactions/?limit=${rowsPerPage}&offset=${
+    page * rowsPerPage
+  }&_type=${filterForm.type}&search=${filterForm.search}&date__gte=${
+    filterForm.sdate || ""
+  }&date__lte=${filterForm.edate || ""}`;
+
+  useEffect(() => {
+    AxiosInstance.get(url)
+      .then((resp) => {
+        setTransactions(resp.data.results);
+        setdataCount(resp.data.count);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [refresher, account_book_id, url]);
+
+  const types = [
+    { value: "", title: "All Transaction" },
+    { value: "DEBIT", title: "Income" },
+    { value: "CREDIT", title: "Expenses" },
+  ];
+
+  return loading ? (
+    <Container component="main" sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}>
+      <LinearProgress />
+    </Container>
+  ) : (
     <>
       <Helmet>
-        <title>My Account Books</title>
+        <title>Expense Tracker | {!loading ? accountBook.title : ""}</title>
       </Helmet>
       <Container
         sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "90vw" }}
       >
-        <Typography variant="h3" sx={{ marginBottom: "2vh" }} align="center">
-          {searchQuery !== ""
-            ? `Search Results for "${searchQuery}"`
-            : "My Account Books"}
+        <Typography variant="h3" sx={{ marginBottom: "5px", fontWeight: 400 }}>
+          {accountBook.title}
+        </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 400,
+            color: accountBook.balance >= 0 ? "green" : "red",
+          }}
+        >
+          Rs. {accountBook.balance}/-
         </Typography>
         <Divider />
         <Grid container spacing={2}>
@@ -112,12 +188,59 @@ const HelpsList = () => {
                   <Grid item>
                     <TextField
                       id="search"
-                      label="Search Account Book Title"
+                      label="Search transactions"
                       variant="outlined"
+                      name="search"
                       fullWidth
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={filterForm.search}
+                      onChange={handleFormChange}
                     />
+                  </Grid>
+                  <Grid item>
+                    <FormControl fullWidth>
+                      <label htmlFor="type">Start Date:</label>
+                      <Select
+                        variant="outlined"
+                        id="type"
+                        name="type"
+                        type="text"
+                        displayEmpty
+                        value={filterForm.type}
+                        onChange={handleFormChange}
+                      >
+                        {types.map((type) => (
+                          <MenuItem key={type.value} value={type.value}>
+                            {type.title}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    <FormControl fullWidth>
+                      <label htmlFor="sdate">Start Date:</label>
+                      <TextField
+                        type="date"
+                        name="sdate"
+                        variant="outlined"
+                        onChange={(e) => {
+                          handleFormChange(e);
+                        }}
+                      ></TextField>
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    <FormControl fullWidth>
+                      <label htmlFor="edate">End Date:</label>
+                      <TextField
+                        type="date"
+                        name="edate"
+                        variant="outlined"
+                        onChange={(e) => {
+                          handleFormChange(e);
+                        }}
+                      ></TextField>
+                    </FormControl>
                   </Grid>
                 </Grid>
               </Grid>
@@ -150,60 +273,42 @@ const HelpsList = () => {
                   spacing={2}
                   sx={{ marginY: 1, height: "min-content" }}
                 >
-                  {accountBooks.map((accountBook) => {
-                    return (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={6}
-                        lg={4}
-                        xl={4}
-                        key={accountBook.id}
-                      >
-                        <AccountBookCard accountBook={accountBook} />
-                      </Grid>
-                    );
-                  })}
+                  <Grid item xs={12} xl={12}>
+                    <TransactionTable transactions={transactions} />
+                  </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
-                  <CustomPagination
+                  <CustomTablePagination
                     dataCount={dataCount}
-                    rowsPerPage={limit}
+                    rowsPerPage={rowsPerPage}
                     page={page}
                     handleChangePage={handleChangePage}
+                    handleChangeRowsPerPage={handleChangeRowsPerPage}
                   />
                 </Grid>
               </>
             )}
           </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={12}
-            md={3}
-            lg={3}
-            sx={{
-              marginY: 2,
-              display: "flex",
-              justifyContent: "flex-start",
-              flexDirection: "column",
-              paddingY: 0,
-            }}
-          >
-            <Button
-              sx={{ my: 3 }}
-              variant="outlined"
-              disableElevation
-              component={Link}
-            >
-              + Create New Account Book
-            </Button>
-          </Grid>
         </Grid>
       </Container>
+      <AddTransaction
+        account_book={account_book_id}
+        _type="DEBIT"
+        refreshForm={() => {
+          setRefresher(refresher + 1);
+        }}
+        bottomOffset={20}
+      />
+      <AddTransaction
+        account_book={account_book_id}
+        _type="CREDIT"
+        refreshForm={() => {
+          setRefresher(refresher + 1);
+        }}
+        bottomOffset={80}
+      />
     </>
   );
 };
 
-export default HelpsList;
+export default AccountBookDetail;

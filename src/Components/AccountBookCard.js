@@ -1,24 +1,26 @@
 import * as React from "react";
 import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
 import { Button, CardActions } from "@mui/material";
 import CardHeader from "@mui/material/CardHeader";
-import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { green } from "@mui/material/colors";
 import { Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export default function HelpCard({ accountBook }) {
   return (
-    <Card
+    <Button
+      disableRipple
+      component={(Card, Link)}
+      to={`/account-detail/${accountBook.id}`}
+      variant={"text"}
       sx={{
+        padding: 0,
         color: "white",
-        minHeight: "150px",
+        minHeight: "200px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        borderRadius: 3,
+        justifyContent: "space-around",
+        borderRadius: 4,
         height: "100%",
         backgroundSize: "250%",
         transition: "0.6s",
@@ -27,24 +29,32 @@ export default function HelpCard({ accountBook }) {
         "&:hover": {
           backgroundPosition: "right",
         },
+        "&:focus": {
+          backgroundPosition: "right",
+        },
       }}
     >
-      <CardHeader title={accountBook.title} />
-      <CardActions disableSpacing>
+      <CardHeader
+        title={<Typography variant="h6">{accountBook.title}</Typography>}
+      />
+      <CardActions
+        sx={{
+          width: "100%",
+        }}
+        disableSpacing
+      >
         <Grid
           container
           sx={{
-            display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
           }}
         >
-          <Grid>
+          <Grid item>
             <Typography variant="body" sx={{ px: 1 }}>
               Rs. {accountBook.balance}/-
             </Typography>
           </Grid>
-          <Grid>
+          <Grid item>
             <Button
               size="small"
               color="secondary"
@@ -52,6 +62,7 @@ export default function HelpCard({ accountBook }) {
               to={`/account-detail/${accountBook.id}`}
               variant="outlined"
               sx={{
+                mx: 1,
                 color: "white",
                 borderColor: "white",
                 "&:hover": {
@@ -59,11 +70,11 @@ export default function HelpCard({ accountBook }) {
                 },
               }}
             >
-              View
+              edit
             </Button>
           </Grid>
         </Grid>
       </CardActions>
-    </Card>
+    </Button>
   );
 }

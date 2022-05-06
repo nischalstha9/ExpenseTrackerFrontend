@@ -3,7 +3,7 @@ import categoryReducer from "./categoryReducer";
 import isAuthenticatedReducer from "./isAuthenticated";
 // import accessTokenReducer from "./accessToken";
 import userInfoReducer from "./userInfo";
-import homeMetaReducer from "./homeMetaReducer";
+import userBooksReducer from "./userBooksReducer";
 // import roleReducer from "./roleReducer";
 // import alertsReducer from "./alerts";
 
@@ -13,7 +13,7 @@ const allReducers = combineReducers({
   // token: accessTokenReducer,
   user: userInfoReducer,
   categories: categoryReducer,
-  home_meta: homeMetaReducer,
+  user_books: userBooksReducer,
   // alerts: alertsReducer,
 });
 

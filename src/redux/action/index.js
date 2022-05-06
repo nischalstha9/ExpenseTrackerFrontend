@@ -7,6 +7,8 @@ import {
   REMOVE_ALERT,
   SET_CATEGORY,
   SET_HOME_META,
+  INSERT_USER_BOOKS,
+  REMOVE_USER_BOOKS,
 } from "../constants";
 export const log_in = () => {
   return {
@@ -58,5 +60,18 @@ export const set_home_meta = (meta) => {
   return {
     type: SET_HOME_META,
     payload: meta,
+  };
+};
+
+export const insert_user_books = (books) => {
+  return {
+    type: INSERT_USER_BOOKS,
+    payload: books,
+  };
+};
+
+export const remove_user_books = () => {
+  return {
+    type: REMOVE_USER_BOOKS,
   };
 };

@@ -10,6 +10,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import PrivateRoute from "./PrivateRoute";
 import Logout from "../pages/Logout";
 import AccountBooksList from "../pages/AccountBooksList";
+import AccountBookDetail from "../pages/AccountBookDetail";
 import HelpDetail from "../pages/HelpDetail";
 import MyHelps from "../pages/MyHelps";
 import CreateUpdateHelp from "../pages/CreateUpdateHelp";
@@ -42,7 +43,11 @@ const Routes = ({ isAuthenticated }) => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/helps" component={AccountBooksList} />
           <Route exact path="/activate" component={ActivateAccount} />
-          <Route exact path="/help-detail/:help_slug" component={HelpDetail} />
+          <Route
+            exact
+            path="/account-detail/:account_book_id"
+            component={AccountBookDetail}
+          />
           <Route exact path="/forget-password" component={ForgetPassword} />
           <Route exact path="/forget" component={SetNewPassword} />
           <PrivateRoute

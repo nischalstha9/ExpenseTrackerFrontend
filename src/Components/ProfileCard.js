@@ -1,5 +1,4 @@
 import React from "react";
-import { Grid, Typography } from "@mui/material";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import { green } from "@mui/material/colors";

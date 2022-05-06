@@ -20,6 +20,12 @@ const Theme = createTheme({
       main: "#456dfa",
       liked: "#456dfa",
     },
+    black: {
+      main: "#000",
+    },
+    avatar: {
+      main: "#cea521", //#2496ed
+    },
   },
   props: {
     MuiList: {

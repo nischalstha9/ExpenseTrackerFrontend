@@ -31,7 +31,7 @@ const CustomTablePagination = ({
     <div className={classes.paginationContainer}>
       <TablePagination
         className={classes.paginationItem}
-        rowsPerPageOptions={[5, 10, 25, 100]}
+        rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
         count={dataCount}
         rowsPerPage={rowsPerPage}

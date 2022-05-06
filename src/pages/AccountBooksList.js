@@ -8,18 +8,20 @@ import AccountBookCard from "../Components/AccountBookCard";
 import HelpFilter from "../Components/HelpFilter";
 import AxiosInstance from "../AxiosInstance";
 import CustomPagination from "../Components/CustomPagination";
-import {
-  HELP_FILTER_HAS_SEARCH,
-  HELP_FILTER_HAS_CATEGORY,
-  HELP_PAGINATION_ITEM_LIMIT,
-} from "../redux/constants";
+import CreateNewAccountBook from "../Components/CreateNewAccountBook";
+import { HELP_PAGINATION_ITEM_LIMIT } from "../redux/constants";
 import { Helmet } from "react-helmet";
 import MostLikedHelps from "../Components/MostLikedHelps";
 import { Link } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { insert_user_books } from "../redux/action";
 
 const HelpsList = () => {
-  const [accountBooks, setAccountBooks] = React.useState([]);
+  const dispatch = useDispatch();
+  const [accountBooks, setAccountBooks] = React.useState(
+    useSelector((state) => state.user_books || [])
+  );
   const [searchQuery, setSearchQuery] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [dataCount, setDataCount] = React.useState(0);
@@ -39,6 +41,7 @@ const HelpsList = () => {
       }&ordering=-created_at`
     )
       .then((resp) => {
+        dispatch(insert_user_books(resp.data.results));
         setAccountBooks(resp.data.results);
         setDataCount(resp.data.count);
         setLoading(false);
@@ -191,14 +194,7 @@ const HelpsList = () => {
               paddingY: 0,
             }}
           >
-            <Button
-              sx={{ my: 3 }}
-              variant="outlined"
-              disableElevation
-              component={Link}
-            >
-              + Create New Account Book
-            </Button>
+            <CreateNewAccountBook />
           </Grid>
         </Grid>
       </Container>
