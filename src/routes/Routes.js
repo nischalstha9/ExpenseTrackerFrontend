@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import PrivateRoute from "./PrivateRoute";
 import Logout from "../pages/Logout";
-import HelpList from "../pages/HelpList";
+import AccountBooksList from "../pages/AccountBooksList";
 import HelpDetail from "../pages/HelpDetail";
 import MyHelps from "../pages/MyHelps";
 import CreateUpdateHelp from "../pages/CreateUpdateHelp";
@@ -36,11 +36,11 @@ const Routes = ({ isAuthenticated }) => {
       <ScrollToTop />
       <Switch>
         <Box sx={{ minHeight: "90vh" }}>
-          <PrivateRoute exact path="/" component={HelpList} />
+          <PrivateRoute exact path="/" component={AccountBooksList} />
           <Route exact path="/about" component={About} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/login" component={Login} />
-          <Route exact path="/helps" component={HelpList} />
+          <Route exact path="/helps" component={AccountBooksList} />
           <Route exact path="/activate" component={ActivateAccount} />
           <Route exact path="/help-detail/:help_slug" component={HelpDetail} />
           <Route exact path="/forget-password" component={ForgetPassword} />

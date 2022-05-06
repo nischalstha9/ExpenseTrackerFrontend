@@ -1,7 +1,5 @@
 import { React } from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -17,7 +15,6 @@ import { Helmet } from "react-helmet";
 import { useQuery } from "../Components/Utils";
 
 export default function ActivateAccount() {
-  const dispatch = useDispatch();
   const history = useHistory();
   const query = useQuery();
 

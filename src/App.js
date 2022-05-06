@@ -23,7 +23,7 @@ function App() {
       dispatch(set_category(new_meta.all_categories));
     });
   };
-  setHomeMeta();
+  // setHomeMeta();
 
   const setLoginState = async () => {
     if (!user) {
