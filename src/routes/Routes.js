@@ -11,17 +11,13 @@ import PrivateRoute from "./PrivateRoute";
 import Logout from "../pages/Logout";
 import AccountBooksList from "../pages/AccountBooksList";
 import AccountBookDetail from "../pages/AccountBookDetail";
-import HelpDetail from "../pages/HelpDetail";
-import MyHelps from "../pages/MyHelps";
-import CreateUpdateHelp from "../pages/CreateUpdateHelp";
+import EditAccountBook from "../pages/EditAccountBook";
 import { ToastContainer, toast } from "react-toastify";
 import NOT_FOUND from "../pages/404";
 import ActivateAccount from "../pages/ActivateAccount";
 import ChangePassword from "../pages/ChangePassword";
 import ForgetPassword from "../pages/ForgetPassword";
 import SetNewPassword from "../pages/SetNewPassword";
-import LikedHelps from "../pages/LikedHelps";
-import DeleteHelp from "../pages/DeleteHelp";
 import Profile from "../pages/Profile";
 import Box from "@mui/material/Box";
 
@@ -43,10 +39,15 @@ const Routes = ({ isAuthenticated }) => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/helps" component={AccountBooksList} />
           <Route exact path="/activate" component={ActivateAccount} />
-          <Route
+          <PrivateRoute
             exact
             path="/account-detail/:account_book_id"
             component={AccountBookDetail}
+          />
+          <PrivateRoute
+            exact
+            path="/edit-account/:account_book_id"
+            component={EditAccountBook}
           />
           <Route exact path="/forget-password" component={ForgetPassword} />
           <Route exact path="/forget" component={SetNewPassword} />
@@ -55,23 +56,6 @@ const Routes = ({ isAuthenticated }) => {
             path="/change-password"
             component={ChangePassword}
           />
-          <PrivateRoute
-            exact
-            path="/delete-help/:help_slug"
-            component={DeleteHelp}
-          />
-          <PrivateRoute
-            exact
-            path="/create-help"
-            component={CreateUpdateHelp}
-          />
-          <PrivateRoute
-            exact
-            path="/edit-help/:help_slug"
-            component={CreateUpdateHelp}
-          />
-          <PrivateRoute exact path="/my-helps" component={MyHelps} />
-          <PrivateRoute exact path="/my-liked-helps" component={LikedHelps} />
           <PrivateRoute exact path="/logout" component={Logout} />
           <PrivateRoute exact path="/profile" component={Profile} />
         </Box>

@@ -10,15 +10,6 @@ export const useQuery = () => {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 };
 
-export const GetCategoryNameFromID = (id) => {
-  const categories = useSelector((state) => state.categories);
-  return (
-    categories.filter((category) => {
-      return category.id === id;
-    })[0] || null
-  );
-};
-
 export const isUserCustomer = (user) => {
   return user.role == 2;
 };

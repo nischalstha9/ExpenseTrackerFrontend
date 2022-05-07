@@ -4,7 +4,13 @@ import { Container, Typography, Paper, Box } from "@mui/material";
 const NoPermission = () => {
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
-      <Paper sx={{ padding: "1vh 2vw", border: "5px solid #39aa57" }}>
+      <Paper
+        sx={{
+          padding: "1vh 2vw",
+          border: "5px solid",
+          borderColor: "primary.main",
+        }}
+      >
         <Box
           sx={{
             marginTop: 8,

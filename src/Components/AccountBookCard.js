@@ -16,7 +16,7 @@ export default function HelpCard({ accountBook }) {
       sx={{
         padding: 0,
         color: "white",
-        minHeight: "200px",
+        minHeight: "150px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-around",
@@ -59,7 +59,7 @@ export default function HelpCard({ accountBook }) {
               size="small"
               color="secondary"
               component={Link}
-              to={`/account-detail/${accountBook.id}`}
+              to={`/edit-account/${accountBook.id}`}
               variant="outlined"
               sx={{
                 mx: 1,

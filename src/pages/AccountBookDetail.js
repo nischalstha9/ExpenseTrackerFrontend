@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { FormControl, Select, MenuItem } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -11,7 +12,9 @@ import { TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
 import TransactionTable from "../Components/TransactionTable";
 import CustomTablePagination from "../Components/CustomTablePagination";
+import Loading from "../Components/Loading";
 import AddTransaction from "../Components/AddTransaction";
+import NoPermission from "../Components/NoPermission";
 import AccountBookPieChart from "../charts/AccountBookPieChart";
 
 const AccountBookDetail = () => {
@@ -19,6 +22,8 @@ const AccountBookDetail = () => {
   const [accountBook, setAccountBook] = React.useState({});
   const [transactions, setTransactions] = React.useState([]);
   const [loading, setLoading] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [dataCount, setdataCount] = React.useState(0);
@@ -64,14 +69,16 @@ const AccountBookDetail = () => {
 
   useEffect(() => {
     setLoading(true);
+    setIsPageLoading(true);
     AxiosInstance.get(`/expensetracker/account-books/${account_book_id}/`)
       .then((resp) => {
         setAccountBook(resp.data);
-        setLoading(false);
+        setIsOwner(true);
       })
       .catch((err) => {
         console.log(err);
       });
+    setIsPageLoading(false);
   }, [refresher]);
 
   let url = `expensetracker/account-books/${account_book_id}/transactions/?limit=${rowsPerPage}&offset=${
@@ -81,10 +88,12 @@ const AccountBookDetail = () => {
   }&date__lte=${filterForm.edate || ""}`;
 
   useEffect(() => {
+    setLoading(true);
     AxiosInstance.get(url)
       .then((resp) => {
         setTransactions(resp.data.results);
         setdataCount(resp.data.count);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -110,19 +119,27 @@ const AccountBookDetail = () => {
     return expenses;
   };
 
+  if (isPageLoading) {
+    return <Loading />;
+  }
+
+  if (!isOwner) {
+    return <NoPermission />;
+  }
+
   return (
     <>
       <Helmet>
-        <title>Expense Tracker | {!loading ? accountBook.title : ""}</title>
+        <title>Expense Tracker | {accountBook.title || ""}</title>
       </Helmet>
       <Container
         sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "90vw" }}
       >
-        <Typography variant="h3" sx={{ marginBottom: "5px", fontWeight: 400 }}>
+        <Typography variant="h4" sx={{ marginBottom: "5px", fontWeight: 400 }}>
           {accountBook.title}
         </Typography>
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{
             fontWeight: 400,
             color: accountBook.balance >= 0 ? "green" : "red",
@@ -140,7 +157,7 @@ const AccountBookDetail = () => {
             md={3}
             lg={3}
             sx={{
-              marginY: 1,
+              marginY: 0,
               display: "flex",
               alignContent: "flex-start",
               flexDirection: "row",
@@ -148,15 +165,22 @@ const AccountBookDetail = () => {
               alignItems: "center",
             }}
           >
-            <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              sx={{ marginTop: "10px" }}
+            >
               <Grid
                 sx={{
                   background: "white",
                   padding: "13px",
                   display: "flex",
                   flexDirection: "column",
-                  borderRadius: "10px",
-                  marginTop: "10px",
+                  borderRadius: "5px",
+                  // marginTop: "10px",
                 }}
                 xs={12}
                 sm={12}
@@ -235,6 +259,19 @@ const AccountBookDetail = () => {
                       ></TextField>
                     </FormControl>
                   </Grid>
+                  <Grid item>
+                    <FormControl fullWidth>
+                      <Button
+                        variant="outlined"
+                        onClick={(e) => {
+                          setPage(0);
+                          setFilterForm(initialFilter);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </FormControl>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -247,7 +284,7 @@ const AccountBookDetail = () => {
             md={6}
             lg={6}
             spacing={2}
-            sx={{ marginY: 1, height: "min-content" }}
+            sx={{ marginTop: 0, padding: 0, height: "min-content" }}
           >
             {loading ? (
               <Container
@@ -264,8 +301,14 @@ const AccountBookDetail = () => {
                   xs={12}
                   lg={12}
                   spacing={2}
-                  sx={{ marginY: 1, height: "min-content" }}
+                  sx={{
+                    marginY: 0,
+                    height: "min-content",
+                  }}
                 >
+                  <Grid item xs={12} xl={12}>
+                    <Typography variant="h6">Transactions</Typography>
+                  </Grid>
                   <Grid item xs={12} xl={12}>
                     <TransactionTable
                       transactions={transactions}
@@ -289,7 +332,7 @@ const AccountBookDetail = () => {
           </Grid>
           <Grid
             sx={{
-              marginTop: "20px",
+              marginTop: "10px",
               justifyContent: "space-evenly",
               alignItems: "center",
             }}
@@ -311,16 +354,18 @@ const AccountBookDetail = () => {
                 padding: 1,
               }}
             >
-              <Typography variant="h6">
-                Summary of your selected data
-              </Typography>
-              <Divider />
-              <Typography variant="p">Income VS Expenditure</Typography>
               {!loading && (
-                <AccountBookPieChart
-                  incomes={getIncomes()}
-                  expenses={getExpenses()}
-                />
+                <>
+                  <Typography variant="h6">
+                    Summary of your selected data
+                  </Typography>
+                  <Divider />
+                  <Typography variant="p">Income VS Expenditure</Typography>
+                  <AccountBookPieChart
+                    incomes={getIncomes()}
+                    expenses={getExpenses()}
+                  />
+                </>
               )}
             </Grid>
           </Grid>
