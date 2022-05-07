@@ -7,10 +7,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { green, red } from "@mui/material/colors";
-import { Button } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import EditTransactionModal from "./EditTransactionModal";
 
-export default function TransactionTable({ transactions = [] }) {
+export default function TransactionTable({ transactions = [], refreshForm }) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="transaction table">
@@ -40,9 +39,13 @@ export default function TransactionTable({ transactions = [] }) {
               <TableCell>{transaction.description}</TableCell>
               <TableCell align="right">{transaction.amount}</TableCell>
               <TableCell align="right">
-                <Button color="black">
-                  <EditIcon />
-                </Button>
+                <EditTransactionModal
+                  account_book={transaction.account_book}
+                  trans_id={transaction.id}
+                  description={transaction.description}
+                  amount={transaction.amount}
+                  refreshForm={refreshForm}
+                />
               </TableCell>
             </TableRow>
           ))}

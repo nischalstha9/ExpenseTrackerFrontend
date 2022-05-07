@@ -9,19 +9,14 @@ import {
 } from "@mui/material";
 import AxiosInstance from "../AxiosInstance";
 import { useFormik } from "formik";
-import Fab from "@mui/material/Fab";
-import { Add as AddIcon } from "@mui/icons-material";
-import Slide from "@mui/material/Slide";
+import EditIcon from "@mui/icons-material/Edit";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-export default function AddTransactionModal({
+export default function EditTransactionModal({
   account_book,
-  _type,
+  trans_id,
+  description,
+  amount,
   refreshForm,
-  bottomOffset,
 }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -31,18 +26,32 @@ export default function AddTransactionModal({
     formik.handleReset();
     setOpen(false);
   };
+  const HandleDelete = () => {
+    AxiosInstance.delete(
+      `expensetracker/account-books/${account_book}/transactions/${trans_id}/`,
+      {
+        withCredentials: true,
+      }
+    )
+      .then((resp) => {
+        handleClose();
+        refreshForm();
+      })
+      .catch((err) => console.log(err));
+  };
 
   const formik = useFormik({
-    initialValues: { description: "", amount: 0, _type: _type },
+    initialValues: { description: description, amount: amount },
     onSubmit: (values) => {
-      AxiosInstance.post(
-        `expensetracker/account-books/${account_book}/transactions/`,
+      AxiosInstance.patch(
+        `expensetracker/account-books/${account_book}/transactions/${trans_id}/`,
         values,
         {
           withCredentials: true,
         }
       )
         .then((resp) => {
+          console.log(resp);
           handleClose();
           refreshForm();
         })
@@ -51,32 +60,16 @@ export default function AddTransactionModal({
   });
 
   return (
-    <>
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{
-          margin: 0,
-          top: "auto",
-          right: 20,
-          bottom: bottomOffset || 20,
-          left: "auto",
-          position: "fixed",
-        }}
-        variant="extended"
-        onClick={handleClickOpen}
-      >
-        <AddIcon sx={{ mr: 1 }} />
-        {_type === "DEBIT" ? "Income" : "Expense"}
-      </Fab>
+    <div>
+      <Button disableElevation onClick={handleClickOpen} color="black">
+        <EditIcon />
+      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
-        TransitionComponent={Transition}
+        aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">
-          Add {_type === "DEBIT" ? "Income" : "Expense"} Transaction
-        </DialogTitle>
+        <DialogTitle id="form-dialog-title">Edit Transaction</DialogTitle>
         <form action="" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <TextField
@@ -104,12 +97,15 @@ export default function AddTransactionModal({
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
+            <Button onClick={HandleDelete} color="primary">
+              Delete
+            </Button>
             <Button onClick={formik.handleSubmit} color="primary">
-              {_type === "DEBIT" ? "Add Income" : "Add Expense"}
+              Update
             </Button>
           </DialogActions>
         </form>
       </Dialog>
-    </>
+    </div>
   );
 }

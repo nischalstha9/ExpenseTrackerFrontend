@@ -5,31 +5,26 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import AccountBookCard from "../Components/AccountBookCard";
-import HelpFilter from "../Components/HelpFilter";
 import AxiosInstance from "../AxiosInstance";
 import CustomPagination from "../Components/CustomPagination";
 import CreateNewAccountBook from "../Components/CreateNewAccountBook";
 import { HELP_PAGINATION_ITEM_LIMIT } from "../redux/constants";
 import { Helmet } from "react-helmet";
-import MostLikedHelps from "../Components/MostLikedHelps";
-import { Link } from "react-router-dom";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { insert_user_books } from "../redux/action";
 
-const HelpsList = () => {
+const AccountBooksList = () => {
   const dispatch = useDispatch();
-  const [accountBooks, setAccountBooks] = React.useState(
-    useSelector((state) => state.user_books || [])
-  );
+  const accountBooksData = useSelector((state) => state.user_books);
+  const accountBooks = accountBooksData.results;
   const [searchQuery, setSearchQuery] = React.useState("");
   const [page, setPage] = React.useState(0);
-  const [dataCount, setDataCount] = React.useState(0);
+  const [dataCount, setDataCount] = React.useState(accountBooksData.count);
   const limit = HELP_PAGINATION_ITEM_LIMIT;
   const [loading, setLoading] = useState(true);
 
   const handleChangePage = (event, newPage) => {
-    window.scroll(0, 500);
     setPage(newPage);
   };
 
@@ -41,8 +36,7 @@ const HelpsList = () => {
       }&ordering=-created_at`
     )
       .then((resp) => {
-        dispatch(insert_user_books(resp.data.results));
-        setAccountBooks(resp.data.results);
+        dispatch(insert_user_books(resp.data));
         setDataCount(resp.data.count);
         setLoading(false);
       })
@@ -153,21 +147,27 @@ const HelpsList = () => {
                   spacing={2}
                   sx={{ marginY: 1, height: "min-content" }}
                 >
-                  {accountBooks.map((accountBook) => {
-                    return (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={6}
-                        lg={4}
-                        xl={4}
-                        key={accountBook.id}
-                      >
-                        <AccountBookCard accountBook={accountBook} />
-                      </Grid>
-                    );
-                  })}
+                  {accountBooks.length > 0 ? (
+                    accountBooks.map((accountBook) => {
+                      return (
+                        <Grid
+                          item
+                          xs={12}
+                          sm={6}
+                          md={6}
+                          lg={4}
+                          xl={4}
+                          key={accountBook.id}
+                        >
+                          <AccountBookCard accountBook={accountBook} />
+                        </Grid>
+                      );
+                    })
+                  ) : (
+                    <Typography variant="h5" sx={{ px: 1, mx: 1 }}>
+                      Lets Create an account book to get started!
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
                   <CustomPagination
@@ -202,4 +202,4 @@ const HelpsList = () => {
   );
 };
 
-export default HelpsList;
+export default AccountBooksList;

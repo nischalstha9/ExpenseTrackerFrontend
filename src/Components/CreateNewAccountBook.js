@@ -14,6 +14,7 @@ import AxiosInstance from "../AxiosInstance";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { insert_user_books } from "../redux/action";
+import { HELP_PAGINATION_ITEM_LIMIT } from "../redux/constants";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -35,9 +36,11 @@ export default function AlertDialogSlide() {
       AxiosInstance.post("/expensetracker/account-books/", values)
         .then((resp) => {
           toast.success("New account book created successfully!");
-          AxiosInstance.get(`/expensetracker/account-books/`)
+          AxiosInstance.get(
+            `/expensetracker/account-books/?limit=${HELP_PAGINATION_ITEM_LIMIT}&offset=0&ordering=-created_at`
+          )
             .then((resp) => {
-              dispatch(insert_user_books(resp.data.results));
+              dispatch(insert_user_books(resp.data));
             })
             .catch((err) => {
               console.log(err);
@@ -49,6 +52,7 @@ export default function AlertDialogSlide() {
             position: toast.POSITION.BOTTOM_CENTER,
           });
         });
+      createNewAccountBookForm.resetForm();
       setSubmitting(false);
     },
     validationSchema: NewAccountBookSchema,
@@ -89,6 +93,8 @@ export default function AlertDialogSlide() {
             <TextField
               sx={{ mt: 2 }}
               fullWidth
+              focused
+              autoFocus
               name="title"
               id="title"
               label="Title"

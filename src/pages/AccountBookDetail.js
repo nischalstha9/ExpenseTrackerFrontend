@@ -1,38 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import {
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  FormControl,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import { FormControl, Select, MenuItem } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import AxiosInstance from "../AxiosInstance";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
 import TransactionTable from "../Components/TransactionTable";
 import CustomTablePagination from "../Components/CustomTablePagination";
 import AddTransaction from "../Components/AddTransaction";
-import Fab from "@mui/material/Fab";
-import { Add as AddIcon } from "@mui/icons-material";
-import { green } from "@mui/material/colors";
+import AccountBookPieChart from "../charts/AccountBookPieChart";
 
 const AccountBookDetail = () => {
   const { account_book_id } = useParams();
   const [accountBook, setAccountBook] = React.useState({});
   const [transactions, setTransactions] = React.useState([]);
-  const [searchQuery, setSearchQuery] = React.useState("");
   const [loading, setLoading] = useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -69,7 +54,6 @@ const AccountBookDetail = () => {
   };
 
   const handleChangePage = (event, newPage) => {
-    window.scroll(0, 500);
     setPage(newPage);
   };
 
@@ -113,11 +97,20 @@ const AccountBookDetail = () => {
     { value: "CREDIT", title: "Expenses" },
   ];
 
-  return loading ? (
-    <Container component="main" sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}>
-      <LinearProgress />
-    </Container>
-  ) : (
+  const getIncomes = () => {
+    const incomes = transactions.filter((transaction) => {
+      return transaction._type == "DEBIT";
+    });
+    return incomes;
+  };
+  const getExpenses = () => {
+    const expenses = transactions.filter((transaction) => {
+      return transaction._type == "CREDIT";
+    });
+    return expenses;
+  };
+
+  return (
     <>
       <Helmet>
         <title>Expense Tracker | {!loading ? accountBook.title : ""}</title>
@@ -138,7 +131,7 @@ const AccountBookDetail = () => {
           Rs. {accountBook.balance}/-
         </Typography>
         <Divider />
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid
             container
             item
@@ -274,7 +267,12 @@ const AccountBookDetail = () => {
                   sx={{ marginY: 1, height: "min-content" }}
                 >
                   <Grid item xs={12} xl={12}>
-                    <TransactionTable transactions={transactions} />
+                    <TransactionTable
+                      transactions={transactions}
+                      refreshForm={() => {
+                        setRefresher(refresher + 1);
+                      }}
+                    />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
@@ -288,6 +286,43 @@ const AccountBookDetail = () => {
                 </Grid>
               </>
             )}
+          </Grid>
+          <Grid
+            sx={{
+              marginTop: "20px",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+            xs={12}
+            sm={12}
+            md={3}
+            lg={3}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              sx={{
+                margin: 1,
+                background: "white",
+                borderRadius: "5px",
+                padding: 1,
+              }}
+            >
+              <Typography variant="h6">
+                Summary of your selected data
+              </Typography>
+              <Divider />
+              <Typography variant="p">Income VS Expenditure</Typography>
+              {!loading && (
+                <AccountBookPieChart
+                  incomes={getIncomes()}
+                  expenses={getExpenses()}
+                />
+              )}
+            </Grid>
           </Grid>
         </Grid>
       </Container>

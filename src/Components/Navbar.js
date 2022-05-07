@@ -26,18 +26,18 @@ const NavMenu = [
 const Navbar = ({ isAuthenticated }) => {
   const authenticated = isAuthenticated;
   const user = useSelector((state) => state.user);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  // const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  // const handleOpenNavMenu = (event) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null);
+  // };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -62,7 +62,7 @@ const Navbar = ({ isAuthenticated }) => {
           Expense Tracker
         </Typography>
         <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-          <IconButton
+          {/* <IconButton
             size="large"
             aria-label="account of current user"
             aria-controls="menu-appbar"
@@ -71,8 +71,8 @@ const Navbar = ({ isAuthenticated }) => {
             color="inherit"
           >
             <MenuIcon />
-          </IconButton>
-          <Menu
+          </IconButton> */}
+          {/* <Menu
             id="menu-appbar"
             anchorEl={anchorElNav}
             anchorOrigin={{
@@ -102,7 +102,7 @@ const Navbar = ({ isAuthenticated }) => {
                 </MenuItem>
               );
             })}
-          </Menu>
+          </Menu> */}
         </Box>
         <Typography
           variant="h6"

@@ -73,7 +73,7 @@ export default function Footer() {
               </ListItem>
               <ListItem>
                 <ListItemText
-                  primary="info@sharingiscaring.com.np"
+                  primary="info@expensetracker.com.np"
                   secondary="Email Us"
                 />
               </ListItem>
