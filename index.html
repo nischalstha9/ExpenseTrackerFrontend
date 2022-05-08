@@ -1,13 +1,3 @@
-#!/bin/sh
-
-set -e
-
-export MAIN_CSS=`basename $(ls build/static/css/main.*.css)`
-export MAIN_JS=`basename $(ls build/static/js/main.*.js)`
-export RUNTIME_CHUNK=`basename $(ls build/static/js/*.chunk.js)`
-
-
-cat << EOF | envsubst > ./index.html
 {% load static %}
 <html lang="en">
   <head>
@@ -28,12 +18,11 @@ cat << EOF | envsubst > ./index.html
       rel="stylesheet"
     />
     <title>Aakogako | Expense Tracker</title>
-    <script defer="defer" src="{% static './transaction/js/$MAIN_JS' %}"></script>
-    <link href="{% static './transaction/css/$MAIN_CSS' %}" rel="stylesheet" />
+    <script defer="defer" src="{% static './transaction/js/main.6f59068d.js' %}"></script>
+    <link href="{% static './transaction/css/main.43c86f1c.css' %}" rel="stylesheet" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
 </html>
-EOF

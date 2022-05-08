@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import AxiosInstance from "../AxiosInstance";
 import { Button } from "@mui/material";
-import { log_out, insert_user } from "../redux/action";
+import { log_out, insert_user, remove_user_books } from "../redux/action";
 import { useDispatch } from "react-redux";
 import { Helmet } from "react-helmet";
 import Paper from "@mui/material/Paper";
@@ -23,6 +23,7 @@ const Logout = () => {
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("user");
         dispatch(insert_user({}));
+        dispatch(remove_user_books);
         dispatch(log_out());
         toast.error("You have been logged out!", {
           position: toast.POSITION.BOTTOM_CENTER,

@@ -2,8 +2,8 @@ import axios from "axios";
 
 export const cancelTokenSource = axios.CancelToken.source();
 
-export const host = "http://localhost:8000";
-// export const host = "https://aakogako.herokuapp.com";
+// export const host = "http://localhost:8000";
+export const host = "https://aakogako.herokuapp.com";
 const baseURL = host + "/api/v1/";
 const AxiosInstance = axios.create({
   baseURL: baseURL,
