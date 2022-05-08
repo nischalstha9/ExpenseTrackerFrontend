@@ -37,9 +37,12 @@ export default function DeleteAccountBookModal() {
       .then((resp) => {
         setAccountBook(resp.data);
         setIsOwner(true);
+        setIsPageloading(false);
       })
-      .catch((err) => console.log(err));
-    setIsPageloading(false);
+      .catch((err) => {
+        console.log(err);
+        setIsPageloading(false);
+      });
   }, []);
 
   const UpdateForm = useFormik({
@@ -85,80 +88,83 @@ export default function DeleteAccountBookModal() {
 
   if (isPageLoading) {
     return <Loading />;
-  }
-  if (!isOwner) {
+  } else if (!isOwner) {
     return <NoPermission />;
-  }
-
-  return (
-    <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
-      <Helmet>
-        <title>Sharing is Caring | {`Edit ${accountBook.title}`}</title>
-      </Helmet>
-      <Paper
-        sx={{
-          padding: "1vh 2vw",
-          border: "5px solid",
-          borderColor: "primary.main",
-        }}
-      >
-        <Typography variant="h4">Update Book "{accountBook.title}"</Typography>
-        <Divider />
-        <DialogTitle id="form-dialog-title">Title:</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="title"
-            label="Title"
-            type="text"
-            fullWidth
-            onChange={UpdateForm.handleChange}
-            value={UpdateForm.values.title}
-            placeholder="Title"
-          />
-          <Button
-            variant="outlined"
-            color="secondary"
-            className="btn btn-warning mt-3"
-            onClick={UpdateForm.handleSubmit}
-          >
-            Update
-          </Button>
-        </DialogContent>
-        <Typography variant="h4">Delete Book "{accountBook.title}"</Typography>
-        <Divider />
-        <DialogTitle id="form-dialog-title">
-          Confirm Delete Account Book: "{accountBook.title}"
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText variant="caption">
-            Deleting Account Book will delete all of your transactions in
-            respective account book. This action is irreversible. Enter your
-            password to continue.
-          </DialogContentText>
-          <TextField
-            margin="dense"
-            id="password"
-            label="Password"
-            type="password"
-            fullWidth
-            onChange={deleteForm.handleChange}
-            value={deleteForm.values.password}
-            placeholder="Your Password"
-          />
-          <DialogActions>
+  } else {
+    return (
+      <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
+        <Helmet>
+          <title>Sharing is Caring | {`Edit ${accountBook.title}`}</title>
+        </Helmet>
+        <Paper
+          sx={{
+            padding: "1vh 2vw",
+            border: "5px solid",
+            borderColor: "primary.main",
+          }}
+        >
+          <Typography variant="h4">
+            Update Book "{accountBook.title}"
+          </Typography>
+          <Divider />
+          <DialogTitle id="form-dialog-title">Title:</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="title"
+              label="Title"
+              type="text"
+              fullWidth
+              onChange={UpdateForm.handleChange}
+              value={UpdateForm.values.title}
+              placeholder="Title"
+            />
             <Button
               variant="outlined"
-              color="danger"
-              onClick={deleteForm.handleSubmit}
-              className="btn btn-outline-danger"
+              color="secondary"
+              className="btn btn-warning mt-3"
+              onClick={UpdateForm.handleSubmit}
             >
-              Confirm Delete
+              Update
             </Button>
-          </DialogActions>
-        </DialogContent>
-      </Paper>
-    </Container>
-  );
+          </DialogContent>
+          <Typography variant="h4">
+            Delete Book "{accountBook.title}"
+          </Typography>
+          <Divider />
+          <DialogTitle id="form-dialog-title">
+            Confirm Delete Account Book: "{accountBook.title}"
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText variant="caption">
+              Deleting Account Book will delete all of your transactions in
+              respective account book. This action is irreversible. Enter your
+              password to continue.
+            </DialogContentText>
+            <TextField
+              margin="dense"
+              id="password"
+              label="Password"
+              type="password"
+              fullWidth
+              onChange={deleteForm.handleChange}
+              value={deleteForm.values.password}
+              placeholder="Your Password"
+            />
+            <DialogActions>
+              <Button
+                variant="outlined"
+                color="danger"
+                onClick={deleteForm.handleSubmit}
+                className="btn btn-outline-danger"
+              >
+                Confirm Delete
+              </Button>
+            </DialogActions>
+          </DialogContent>
+        </Paper>
+      </Container>
+    );
+  }
 }

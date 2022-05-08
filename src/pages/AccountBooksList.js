@@ -27,7 +27,6 @@ const AccountBooksList = () => {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
   useEffect(() => {
     setLoading(true);
     AxiosInstance.get(
@@ -38,11 +37,11 @@ const AccountBooksList = () => {
       .then((resp) => {
         dispatch(insert_user_books(resp.data));
         setDataCount(resp.data.count);
-        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      .finally(setLoading(false));
   }, [searchQuery, limit, page]);
 
   return (
@@ -53,7 +52,7 @@ const AccountBooksList = () => {
       <Container
         sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "90vw" }}
       >
-        <Typography variant="h3" sx={{ marginBottom: "2vh" }} align="center">
+        <Typography variant="h5" sx={{ marginBottom: "2vh" }} align="center">
           {searchQuery !== ""
             ? `Search Results for "${searchQuery}"`
             : "My Account Books"}
@@ -147,7 +146,7 @@ const AccountBooksList = () => {
                   spacing={2}
                   sx={{ marginY: 1, height: "min-content" }}
                 >
-                  {accountBooks.length > 0 ? (
+                  {accountBooks && accountBooks.length > 0 ? (
                     accountBooks.map((accountBook) => {
                       return (
                         <Grid
@@ -163,19 +162,35 @@ const AccountBooksList = () => {
                         </Grid>
                       );
                     })
-                  ) : (
-                    <Typography variant="h5" sx={{ px: 1, mx: 1 }}>
+                  ) : !searchQuery ? (
+                    <Typography
+                      variant="h5"
+                      sx={{ px: 1, mx: 1 }}
+                      align="center"
+                    >
                       Lets Create an account book to get started!
+                    </Typography>
+                  ) : (
+                    <Typography
+                      variant="h5"
+                      sx={{ px: 1, mx: 1 }}
+                      align="center"
+                    >
+                      No results for given query!
                     </Typography>
                   )}
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
-                  <CustomPagination
-                    dataCount={dataCount}
-                    rowsPerPage={limit}
-                    page={page}
-                    handleChangePage={handleChangePage}
-                  />
+                  {accountBooks && accountBooks.length > 0 ? (
+                    <CustomPagination
+                      dataCount={dataCount}
+                      rowsPerPage={limit}
+                      page={page}
+                      handleChangePage={handleChangePage}
+                    />
+                  ) : (
+                    ""
+                  )}
                 </Grid>
               </>
             )}

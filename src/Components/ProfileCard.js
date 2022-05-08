@@ -15,7 +15,7 @@ const ProfileCard = ({ user }) => {
               height: 80,
               width: 80,
             }}
-            alt={`${user.first_name} ${user.last_name}` || user.email}
+            alt={user.first_name || user.email}
             src={host + user.avatar_path}
           ></Avatar>
         }

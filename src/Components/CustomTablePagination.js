@@ -28,8 +28,7 @@ const CustomTablePagination = ({
     <Grid
       container
       sx={{
-        justifyContent: "space-between",
-        flexWrap: "wrap",
+        justifyContent: "center",
         alignItems: "center",
       }}
     >
@@ -45,6 +44,7 @@ const CustomTablePagination = ({
             handleChangeRowsPerPage(e);
           }}
           ActionsComponent={FakeTablePaginationActions}
+          sx={{ marginX: "auto", width: "100%" }}
         />
       </Grid>
       <Grid item>

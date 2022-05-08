@@ -1,10 +1,13 @@
 import axios from "axios";
 
+export const cancelTokenSource = axios.CancelToken.source();
+
 export const host = "http://localhost:8000";
-// export const host = "http://139.59.67.104:9798";
+// export const host = "https://aakogako.herokuapp.com";
 const baseURL = host + "/api/v1/";
 const AxiosInstance = axios.create({
   baseURL: baseURL,
+  // cancelToken: cancelTokenSource.token,
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -12,6 +15,10 @@ const AxiosInstance = axios.create({
     accept: "application/json",
   },
 });
+
+// const handleCancelRequest = () => {
+//   cancelTokenSource.cancel("Redundant request was canceled!");
+// };
 
 const refreshPath = "auth/token/refresh/";
 

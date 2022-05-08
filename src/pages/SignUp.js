@@ -75,7 +75,13 @@ export default function SignUp() {
   });
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "10vh" }}>
-      <Paper sx={{ padding: "1vh 2vw", border: "5px solid #39aa57" }}>
+      <Paper
+        sx={{
+          padding: "1vh 2vw",
+          border: "5px solid",
+          borderColor: "primary.main",
+        }}
+      >
         <Box
           sx={{
             marginTop: 8,

@@ -69,16 +69,16 @@ const AccountBookDetail = () => {
 
   useEffect(() => {
     setLoading(true);
-    setIsPageLoading(true);
     AxiosInstance.get(`/expensetracker/account-books/${account_book_id}/`)
       .then((resp) => {
-        setAccountBook(resp.data);
         setIsOwner(true);
+        setAccountBook(resp.data);
+        setIsPageLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsPageLoading(false);
       });
-    setIsPageLoading(false);
   }, [refresher]);
 
   let url = `expensetracker/account-books/${account_book_id}/transactions/?limit=${rowsPerPage}&offset=${
@@ -97,7 +97,8 @@ const AccountBookDetail = () => {
       })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      .finally();
   }, [refresher, account_book_id, url]);
 
   const types = [
@@ -121,274 +122,304 @@ const AccountBookDetail = () => {
 
   if (isPageLoading) {
     return <Loading />;
-  }
-
-  if (!isOwner) {
+  } else if (!isOwner) {
     return <NoPermission />;
-  }
-
-  return (
-    <>
-      <Helmet>
-        <title>Expense Tracker | {accountBook.title || ""}</title>
-      </Helmet>
-      <Container
-        sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "90vw" }}
-      >
-        <Typography variant="h4" sx={{ marginBottom: "5px", fontWeight: 400 }}>
-          {accountBook.title}
-        </Typography>
-        <Typography
-          variant="h5"
+  } else {
+    return (
+      <>
+        <Helmet>
+          <title>Expense Tracker | {accountBook.title || ""}</title>
+        </Helmet>
+        <Container
           sx={{
-            fontWeight: 400,
-            color: accountBook.balance >= 0 ? "green" : "red",
+            paddingBottom: "30px",
+            paddingTop: "4vh",
+            marginX: 0,
+            paddingX: 2,
+            minWidth: "100vw",
+            // backgroundImage:
+            //   "linear-gradient(45deg, rgba(46,60,232,1) 0%, rgba(71,140,232,1) 39%, rgba(95,225,255,1) 100%)",
           }}
         >
-          Rs. {accountBook.balance}/-
-        </Typography>
-        <Divider />
-        <Grid container spacing={1}>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={12}
-            md={3}
-            lg={3}
+          <Typography
+            variant="h4"
+            sx={{ marginBottom: "5px", fontWeight: 400 }}
+          >
+            {accountBook.title}
+          </Typography>
+          <Typography
+            variant="h5"
             sx={{
-              marginY: 0,
-              display: "flex",
-              alignContent: "flex-start",
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              alignItems: "center",
+              fontWeight: 400,
+              color: accountBook.balance >= 0 ? "green" : "red",
             }}
           >
+            Rs. {accountBook.balance}/-
+          </Typography>
+          <Divider />
+          <Grid container spacing={1}>
             <Grid
+              container
               item
               xs={12}
               sm={12}
-              md={12}
-              lg={12}
-              sx={{ marginTop: "10px" }}
+              md={3}
+              lg={3}
+              sx={{
+                marginY: 0,
+                display: "flex",
+                alignContent: "flex-start",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
             >
               <Grid
-                sx={{
-                  background: "white",
-                  padding: "13px",
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: "5px",
-                  // marginTop: "10px",
-                }}
+                item
                 xs={12}
                 sm={12}
-                spacing={2}
+                md={12}
+                lg={12}
+                sx={{ marginTop: "10px" }}
               >
-                <Typography
-                  variant="h6"
-                  align="left"
-                  sx={{
-                    textAlign: "justify",
-                    textJustify: "inter-word",
-                    paddingBottom: "8px",
-                  }}
-                >
-                  Filter Your Search
-                </Typography>
                 <Grid
-                  container
+                  sx={{
+                    background: "white",
+                    padding: "13px",
+                    display: "flex",
+                    flexDirection: "column",
+                    borderRadius: "5px",
+                    // marginTop: "10px",
+                  }}
+                  xs={12}
+                  sm={12}
                   spacing={2}
-                  sx={{ display: "flex", flexDirection: "column" }}
                 >
-                  <Grid item>
-                    <TextField
-                      id="search"
-                      label="Search transactions"
-                      variant="outlined"
-                      name="search"
-                      fullWidth
-                      value={filterForm.search}
-                      onChange={handleFormChange}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <FormControl fullWidth>
-                      <label htmlFor="type">Start Date:</label>
-                      <Select
+                  <Typography
+                    variant="h6"
+                    align="left"
+                    sx={{
+                      textAlign: "justify",
+                      textJustify: "inter-word",
+                      paddingBottom: "8px",
+                    }}
+                  >
+                    Filter Your Search
+                  </Typography>
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <Grid item>
+                      <TextField
+                        id="search"
+                        label="Search transactions"
                         variant="outlined"
-                        id="type"
-                        name="type"
-                        type="text"
-                        displayEmpty
-                        value={filterForm.type}
+                        name="search"
+                        fullWidth
+                        value={filterForm.search}
                         onChange={handleFormChange}
-                      >
-                        {types.map((type) => (
-                          <MenuItem key={type.value} value={type.value}>
-                            {type.title}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item>
-                    <FormControl fullWidth>
-                      <label htmlFor="sdate">Start Date:</label>
-                      <TextField
-                        type="date"
-                        name="sdate"
-                        variant="outlined"
-                        onChange={(e) => {
-                          handleFormChange(e);
-                        }}
-                      ></TextField>
-                    </FormControl>
-                  </Grid>
-                  <Grid item>
-                    <FormControl fullWidth>
-                      <label htmlFor="edate">End Date:</label>
-                      <TextField
-                        type="date"
-                        name="edate"
-                        variant="outlined"
-                        onChange={(e) => {
-                          handleFormChange(e);
-                        }}
-                      ></TextField>
-                    </FormControl>
-                  </Grid>
-                  <Grid item>
-                    <FormControl fullWidth>
-                      <Button
-                        variant="outlined"
-                        onClick={(e) => {
-                          setPage(0);
-                          setFilterForm(initialFilter);
-                        }}
-                      >
-                        Clear
-                      </Button>
-                    </FormControl>
+                      />
+                    </Grid>
+                    <Grid item>
+                      <FormControl fullWidth>
+                        <label htmlFor="type">Start Date:</label>
+                        <Select
+                          variant="outlined"
+                          id="type"
+                          name="type"
+                          type="text"
+                          displayEmpty
+                          value={filterForm.type}
+                          onChange={handleFormChange}
+                        >
+                          {types.map((type) => (
+                            <MenuItem key={type.value} value={type.value}>
+                              {type.title}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <FormControl fullWidth>
+                        <label htmlFor="sdate">Start Date:</label>
+                        <TextField
+                          type="date"
+                          name="sdate"
+                          variant="outlined"
+                          onChange={(e) => {
+                            handleFormChange(e);
+                          }}
+                        ></TextField>
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <FormControl fullWidth>
+                        <label htmlFor="edate">End Date:</label>
+                        <TextField
+                          type="date"
+                          name="edate"
+                          variant="outlined"
+                          onChange={(e) => {
+                            handleFormChange(e);
+                          }}
+                        ></TextField>
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <FormControl fullWidth>
+                        <Button
+                          variant="outlined"
+                          onClick={(e) => {
+                            setPage(0);
+                            setFilterForm(initialFilter);
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </FormControl>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={12}
-            md={6}
-            lg={6}
-            spacing={2}
-            sx={{ marginTop: 0, padding: 0, height: "min-content" }}
-          >
-            {loading ? (
-              <Container
-                component="main"
-                sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}
-              >
-                <LinearProgress />
-              </Container>
-            ) : (
-              <>
-                <Grid
-                  container
-                  item
-                  xs={12}
-                  lg={12}
-                  spacing={2}
-                  sx={{
-                    marginY: 0,
-                    height: "min-content",
-                  }}
-                >
-                  <Grid item xs={12} xl={12}>
-                    <Typography variant="h6">Transactions</Typography>
-                  </Grid>
-                  <Grid item xs={12} xl={12}>
-                    <TransactionTable
-                      transactions={transactions}
-                      refreshForm={() => {
-                        setRefresher(refresher + 1);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginY: 1 }}>
-                  <CustomTablePagination
-                    dataCount={dataCount}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    handleChangePage={handleChangePage}
-                    handleChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </Grid>
-              </>
-            )}
-          </Grid>
-          <Grid
-            sx={{
-              marginTop: "10px",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-            xs={12}
-            sm={12}
-            md={3}
-            lg={3}
-          >
             <Grid
+              container
               item
               xs={12}
               sm={12}
-              md={12}
-              lg={12}
-              sx={{
-                margin: 1,
-                background: "white",
-                borderRadius: "5px",
-                padding: 1,
-              }}
+              md={6}
+              lg={6}
+              spacing={2}
+              sx={{ marginTop: 0, padding: 0, height: "min-content" }}
             >
-              {!loading && (
+              {loading ? (
+                <Container
+                  component="main"
+                  sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}
+                >
+                  <LinearProgress />
+                </Container>
+              ) : (
                 <>
-                  <Typography variant="h6">
-                    Summary of your selected data
-                  </Typography>
-                  <Divider />
-                  <Typography variant="p">Income VS Expenditure</Typography>
-                  <AccountBookPieChart
-                    incomes={getIncomes()}
-                    expenses={getExpenses()}
-                  />
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    lg={12}
+                    spacing={1}
+                    sx={{
+                      marginY: 0,
+                      height: "min-content",
+                    }}
+                  >
+                    {transactions && transactions.length > 0 ? (
+                      <>
+                        <Grid item xs={12} xl={12}>
+                          <Typography variant="h6">
+                            Transaction Table:
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} xl={12}>
+                          <TransactionTable
+                            transactions={transactions}
+                            refreshForm={() => {
+                              setRefresher(refresher + 1);
+                            }}
+                          />
+                        </Grid>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    lg={12}
+                    sx={{ marginY: 1 }}
+                  >
+                    {transactions && transactions.length > 0 ? (
+                      <CustomTablePagination
+                        dataCount={dataCount}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        handleChangePage={handleChangePage}
+                        handleChangeRowsPerPage={handleChangeRowsPerPage}
+                      />
+                    ) : (
+                      <Typography variant="h6" align="center">
+                        No transactions!
+                      </Typography>
+                    )}
+                  </Grid>
                 </>
               )}
             </Grid>
+            <Grid
+              sx={{
+                marginTop: "10px",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+              xs={12}
+              sm={12}
+              md={3}
+              lg={3}
+            >
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                sx={{
+                  margin: 1,
+                  background: "white",
+                  borderRadius: "5px",
+                  padding: 1,
+                }}
+              >
+                {!loading && transactions && transactions.length > 0 && (
+                  <>
+                    <Typography variant="h6">
+                      Summary of your selected data
+                    </Typography>
+                    <Divider />
+                    <Typography variant="p">Income VS Expenditure</Typography>
+                    <AccountBookPieChart
+                      incomes={getIncomes()}
+                      expenses={getExpenses()}
+                    />
+                  </>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
-      <AddTransaction
-        account_book={account_book_id}
-        _type="DEBIT"
-        refreshForm={() => {
-          setRefresher(refresher + 1);
-        }}
-        bottomOffset={20}
-      />
-      <AddTransaction
-        account_book={account_book_id}
-        _type="CREDIT"
-        refreshForm={() => {
-          setRefresher(refresher + 1);
-        }}
-        bottomOffset={80}
-      />
-    </>
-  );
+        </Container>
+        <AddTransaction
+          account_book={account_book_id}
+          _type="DEBIT"
+          refreshForm={() => {
+            setRefresher(refresher + 1);
+          }}
+          bottomOffset={20}
+        />
+        <AddTransaction
+          account_book={account_book_id}
+          _type="CREDIT"
+          refreshForm={() => {
+            setRefresher(refresher + 1);
+          }}
+          bottomOffset={80}
+        />
+      </>
+    );
+  }
 };
 
 export default AccountBookDetail;

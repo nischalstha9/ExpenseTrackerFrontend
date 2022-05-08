@@ -125,7 +125,7 @@ const MyAccount = () => {
             }}
           >
             <Avatar
-              alt={user.email}
+              alt={user.first_name || user.email}
               src={host + user.avatar_path}
               sx={{
                 height: 200,
@@ -133,6 +133,8 @@ const MyAccount = () => {
                 border: "8px solid",
                 borderColor: "primary.main",
                 margin: 5,
+                bgcolor: green[500],
+                fontSize: "90px",
               }}
             ></Avatar>
             <TextField

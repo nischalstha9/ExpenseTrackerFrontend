@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 export default function HelpCard({ accountBook }) {
   return (
     <Button
-      disableRipple
       component={(Card, Link)}
       to={`/account-detail/${accountBook.id}`}
       variant={"text"}

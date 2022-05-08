@@ -48,7 +48,13 @@ export default function ActivateAccount() {
       <Helmet>
         <title>Sharing is Caring | Activate Account</title>
       </Helmet>
-      <Paper sx={{ padding: "1vh 2vw", border: "5px solid #39aa57" }}>
+      <Paper
+        sx={{
+          padding: "1vh 2vw",
+          border: "5px solid",
+          borderColor: "primary.main",
+        }}
+      >
         <Box
           sx={{
             marginTop: 8,
