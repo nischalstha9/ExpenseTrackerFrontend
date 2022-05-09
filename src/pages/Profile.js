@@ -107,7 +107,7 @@ const MyAccount = () => {
         sx={{ marginTop: 3, marginBottom: 8 }}
       >
         <Helmet>
-          <title>Profile | {`${user.email}`} | Sharing is Caring</title>
+          <title>Profile | {`${user.email}`} | Expense Tracker</title>
         </Helmet>
         <Paper
           sx={{
@@ -137,7 +137,7 @@ const MyAccount = () => {
                 fontSize: "90px",
               }}
             ></Avatar>
-            <TextField
+            {/* <TextField
               type="file"
               accept="image/*"
               component={Button}
@@ -155,7 +155,7 @@ const MyAccount = () => {
                   event.currentTarget.files[0]
                 );
               }}
-            />
+            /> */}
             <Typography variant="h6">Profile: {user.email}</Typography>
             <Typography variant="p">
               <Link to="/change-password">Change Password</Link>

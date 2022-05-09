@@ -56,7 +56,7 @@ export default function Login() {
   return (
     <Container maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Sharing is Caring | Forget Password</title>
+        <title>Expense Tracker | Forget Password</title>
       </Helmet>
       <Paper
         sx={{

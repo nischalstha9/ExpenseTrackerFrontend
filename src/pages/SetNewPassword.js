@@ -65,7 +65,7 @@ export default function SetNewPassword() {
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Set New Password | Sharing is Caring</title>
+        <title>Set New Password | Expense Tracker</title>
       </Helmet>
       <Paper
         sx={{

@@ -46,7 +46,7 @@ export default function ActivateAccount() {
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Sharing is Caring | Activate Account</title>
+        <title>Expense Tracker | Activate Account</title>
       </Helmet>
       <Paper
         sx={{

@@ -10,31 +10,36 @@ import { Helmet } from "react-helmet";
 import Paper from "@mui/material/Paper";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 const Logout = () => {
+  const [isProcessing, setIsProcessing] = React.useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const removeToken = () => {
+  const cleanup = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    dispatch(insert_user({}));
+    dispatch(remove_user_books());
+    dispatch(log_out());
+    toast.error("You have been logged out!");
+    setIsProcessing(true);
+  };
+  const doLogout = () => {
+    setIsProcessing(true);
     AxiosInstance.post("auth/token/blacklist/")
-      .then((resp) => {})
-      .catch((err) => {})
-      .finally(() => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("user");
-        dispatch(insert_user({}));
-        dispatch(remove_user_books);
-        dispatch(log_out());
-        toast.error("You have been logged out!", {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-        history.push("/login");
+      .then((resp) => {
+        cleanup();
+      })
+      .catch((err) => {
+        cleanup();
       });
   };
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Sharing is Caring | Login</title>
+        <title>Expense Tracker | Logout</title>
       </Helmet>
       <Paper
         sx={{
@@ -70,9 +75,10 @@ const Logout = () => {
             variant="outlined"
             size="lg"
             color="error"
-            onClick={removeToken}
+            onClick={doLogout}
+            disabled={isProcessing}
           >
-            Logout?
+            {isProcessing ? <CircularProgress /> : "Logout?"}
           </Button>
         </Box>
       </Paper>

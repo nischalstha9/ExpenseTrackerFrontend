@@ -17,6 +17,7 @@ import { useHistory } from "react-router-dom";
 import { log_in, insert_user } from "../redux/action";
 import { toast } from "react-toastify";
 import { Helmet } from "react-helmet";
+import { CircularProgress } from "@mui/material";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -51,21 +52,22 @@ export default function Login() {
             localStorage.setItem("user", JSON.stringify(userData));
             dispatch(log_in());
           });
+          setSubmitting(false);
           history.push("/helps");
         })
         .catch((err) => {
           toast.error(Object.values(err.response.data)[0][0], {
             position: toast.POSITION.BOTTOM_CENTER,
           });
+          setSubmitting(false);
         });
-      setSubmitting(false);
     },
     validationSchema: LoginSchema,
   });
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Sharing is Caring | Login</title>
+        <title>Expense Tracker | Login</title>
       </Helmet>
       <Paper
         sx={{
@@ -129,7 +131,7 @@ export default function Login() {
               onClick={loginForm.handleSubmit}
               disabled={loginForm.isSubmitting || !loginForm.isValid}
             >
-              Login
+              {loginForm.isSubmitting ? <CircularProgress /> : "Login"}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

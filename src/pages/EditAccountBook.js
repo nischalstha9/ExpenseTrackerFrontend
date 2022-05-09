@@ -23,8 +23,6 @@ import { Helmet } from "react-helmet";
 export default function DeleteAccountBookModal() {
   const history = useHistory();
   const [accountBook, setAccountBook] = useState({});
-  const [alerts, setAlerts] = useState([]);
-  const [isLoading, setIsloading] = useState(true);
   const [isPageLoading, setIsPageloading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
 
@@ -47,7 +45,7 @@ export default function DeleteAccountBookModal() {
 
   const UpdateForm = useFormik({
     initialValues: { title: accountBook.title },
-    onSubmit: (values) => {
+    onSubmit: (values, { setSubmitting }) => {
       AxiosInstance.patch(
         `expensetracker/account-books/${accountBook.id}/`,
         values,
@@ -59,14 +57,18 @@ export default function DeleteAccountBookModal() {
           toast.success("Account Book Updated Successfully!");
           history.push("/");
           setAccountBook(resp.data);
+          setSubmitting(false);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setSubmitting(false);
+        });
     },
   });
 
   const deleteForm = useFormik({
     initialValues: { password: "" },
-    onSubmit: (values) => {
+    onSubmit: (values, { setSubmitting }) => {
       console.log(values);
       AxiosInstance.delete(
         `expensetracker/account-books/${accountBook.id}/`,
@@ -77,11 +79,13 @@ export default function DeleteAccountBookModal() {
       )
         .then((resp) => {
           toast.success("Account Book Deleted!");
+          setSubmitting(false);
           history.push("/");
         })
         .catch((err) => {
           let msg = Object.entries(err.response.data)[0][1];
           toast.error(msg);
+          setSubmitting(false);
         });
     },
   });
@@ -92,9 +96,9 @@ export default function DeleteAccountBookModal() {
     return <NoPermission />;
   } else {
     return (
-      <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
+      <Container component="main" maxWidth="sm" sx={{ marginTop: "20px" }}>
         <Helmet>
-          <title>Sharing is Caring | {`Edit ${accountBook.title}`}</title>
+          <title>{`Edit ${accountBook.title}`} | Expense Tracker</title>
         </Helmet>
         <Paper
           sx={{
@@ -103,7 +107,7 @@ export default function DeleteAccountBookModal() {
             borderColor: "primary.main",
           }}
         >
-          <Typography variant="h4">
+          <Typography variant="h5">
             Update Book "{accountBook.title}"
           </Typography>
           <Divider />
@@ -125,16 +129,17 @@ export default function DeleteAccountBookModal() {
               color="secondary"
               className="btn btn-warning mt-3"
               onClick={UpdateForm.handleSubmit}
+              disabled={UpdateForm.isSubmitting || !UpdateForm.isValid}
             >
               Update
             </Button>
           </DialogContent>
-          <Typography variant="h4">
+          <Typography variant="h5">
             Delete Book "{accountBook.title}"
           </Typography>
           <Divider />
           <DialogTitle id="form-dialog-title">
-            Confirm Delete Account Book: "{accountBook.title}"
+            Confirm Delete Account Book "{accountBook.title}" ?
           </DialogTitle>
           <DialogContent>
             <DialogContentText variant="caption">
@@ -143,6 +148,7 @@ export default function DeleteAccountBookModal() {
               password to continue.
             </DialogContentText>
             <TextField
+              autoComplete={false}
               margin="dense"
               id="password"
               label="Password"
@@ -158,6 +164,7 @@ export default function DeleteAccountBookModal() {
                 color="danger"
                 onClick={deleteForm.handleSubmit}
                 className="btn btn-outline-danger"
+                disabled={deleteForm.isSubmitting || !deleteForm.isValid}
               >
                 Confirm Delete
               </Button>

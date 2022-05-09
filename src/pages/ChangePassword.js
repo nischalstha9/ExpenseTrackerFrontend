@@ -63,7 +63,7 @@ export default function ChangePassword() {
   return (
     <Container component="main" maxWidth="sm" sx={{ marginTop: "15vh" }}>
       <Helmet>
-        <title>Change Password | Sharing is Caring</title>
+        <title>Change Password | Expense Tracker</title>
       </Helmet>
       <Paper
         sx={{

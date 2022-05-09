@@ -47,7 +47,7 @@ export default function SignUp() {
       password: "",
       password2: "",
     },
-    onSubmit: (values, { isSubmitting }) => {
+    onSubmit: (values, { setSubmitting }) => {
       AxiosInstance.post("auth/user/", values)
         .then((resp) => {
           toast.success(
@@ -58,6 +58,7 @@ export default function SignUp() {
             }
           );
           signUpForm.resetForm();
+          setSubmitting(false);
           history.push("/login");
         })
         .catch((err) => {
@@ -68,8 +69,8 @@ export default function SignUp() {
               autoClose: false,
             });
           }
+          setSubmitting(false);
         });
-      isSubmitting(false);
     },
     validationSchema: SignupSchema,
   });
@@ -203,6 +204,7 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2, color: "white" }}
               onClick={signUpForm.handleSubmit}
+              disabled={signUpForm.isSubmitting}
             >
               Sign Up
             </Button>

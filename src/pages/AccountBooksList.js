@@ -13,6 +13,7 @@ import { Helmet } from "react-helmet";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { insert_user_books } from "../redux/action";
+import Loading from "../Components/Loading";
 
 const AccountBooksList = () => {
   const dispatch = useDispatch();
@@ -37,11 +38,13 @@ const AccountBooksList = () => {
       .then((resp) => {
         dispatch(insert_user_books(resp.data));
         setDataCount(resp.data.count);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       })
-      .finally(setLoading(false));
+      .finally();
   }, [searchQuery, limit, page]);
 
   return (
@@ -50,7 +53,7 @@ const AccountBooksList = () => {
         <title>My Account Books</title>
       </Helmet>
       <Container
-        sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "90vw" }}
+        sx={{ marginBottom: "25vh", marginTop: "4vh", minWidth: "100vw" }}
       >
         <Typography variant="h5" sx={{ marginBottom: "2vh" }} align="center">
           {searchQuery !== ""
@@ -130,12 +133,7 @@ const AccountBooksList = () => {
             sx={{ marginY: 1, height: "min-content" }}
           >
             {loading ? (
-              <Container
-                component="main"
-                sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}
-              >
-                <LinearProgress />
-              </Container>
+              <Loading />
             ) : (
               <>
                 <Grid
@@ -144,7 +142,7 @@ const AccountBooksList = () => {
                   xs={12}
                   lg={12}
                   spacing={2}
-                  sx={{ marginY: 1, height: "min-content" }}
+                  sx={{ height: "min-content" }}
                 >
                   {accountBooks && accountBooks.length > 0 ? (
                     accountBooks.map((accountBook) => {

@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { FormControl, Select, MenuItem } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
@@ -10,7 +14,7 @@ import AxiosInstance from "../AxiosInstance";
 import { Helmet } from "react-helmet";
 import { TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
-import TransactionTable from "../Components/TransactionTable";
+import HoverableTransactionTable from "../Components/HoverableTransactionTable";
 import CustomTablePagination from "../Components/CustomTablePagination";
 import Loading from "../Components/Loading";
 import AddTransaction from "../Components/AddTransaction";
@@ -128,7 +132,7 @@ const AccountBookDetail = () => {
     return (
       <>
         <Helmet>
-          <title>Expense Tracker | {accountBook.title || ""}</title>
+          <title>{accountBook.title || ""} | Expense Tracker</title>
         </Helmet>
         <Container
           sx={{
@@ -212,6 +216,7 @@ const AccountBookDetail = () => {
                     sx={{ display: "flex", flexDirection: "column" }}
                   >
                     <Grid item>
+                      <label htmlFor="search">Search:</label>
                       <TextField
                         id="search"
                         label="Search transactions"
@@ -223,63 +228,101 @@ const AccountBookDetail = () => {
                       />
                     </Grid>
                     <Grid item>
-                      <FormControl fullWidth>
-                        <label htmlFor="type">Start Date:</label>
-                        <Select
-                          variant="outlined"
-                          id="type"
-                          name="type"
-                          type="text"
-                          displayEmpty
-                          value={filterForm.type}
-                          onChange={handleFormChange}
+                      <Accordion
+                        defaultExpanded={
+                          localStorage.getItem(
+                            "TransactionFilterAccordionStatus"
+                          ) == "true"
+                        }
+                        sx={{ width: "100%" }}
+                        onChange={(event, expanded) => {
+                          localStorage.setItem(
+                            "TransactionFilterAccordionStatus",
+                            expanded
+                          );
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="accountBookTransactionFiltersContent"
+                          id="accountBookTransactionFilters"
                         >
-                          {types.map((type) => (
-                            <MenuItem key={type.value} value={type.value}>
-                              {type.title}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl fullWidth>
-                        <label htmlFor="sdate">Start Date:</label>
-                        <TextField
-                          type="date"
-                          name="sdate"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleFormChange(e);
-                          }}
-                        ></TextField>
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl fullWidth>
-                        <label htmlFor="edate">End Date:</label>
-                        <TextField
-                          type="date"
-                          name="edate"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleFormChange(e);
-                          }}
-                        ></TextField>
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl fullWidth>
-                        <Button
-                          variant="outlined"
-                          onClick={(e) => {
-                            setPage(0);
-                            setFilterForm(initialFilter);
-                          }}
-                        >
-                          Clear
-                        </Button>
-                      </FormControl>
+                          <Typography variant="p">Filters</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Grid
+                            container
+                            spacing={1}
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            lg={12}
+                          >
+                            <Grid item xs={12} lg={12}>
+                              <FormControl fullWidth>
+                                <label htmlFor="type">Transaction Type:</label>
+                                <Select
+                                  variant="outlined"
+                                  id="type"
+                                  name="type"
+                                  type="text"
+                                  displayEmpty
+                                  value={filterForm.type}
+                                  onChange={handleFormChange}
+                                >
+                                  {types.map((type) => (
+                                    <MenuItem
+                                      key={type.value}
+                                      value={type.value}
+                                    >
+                                      {type.title}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            </Grid>
+                            <Grid item xs={12} lg={12}>
+                              <FormControl fullWidth>
+                                <label htmlFor="sdate">Start Date:</label>
+                                <TextField
+                                  type="date"
+                                  name="sdate"
+                                  variant="outlined"
+                                  onChange={(e) => {
+                                    handleFormChange(e);
+                                  }}
+                                ></TextField>
+                              </FormControl>
+                            </Grid>
+                            <Grid item xs={12} lg={12}>
+                              <FormControl fullWidth>
+                                <label htmlFor="edate">End Date:</label>
+                                <TextField
+                                  type="date"
+                                  name="edate"
+                                  variant="outlined"
+                                  onChange={(e) => {
+                                    handleFormChange(e);
+                                  }}
+                                ></TextField>
+                              </FormControl>
+                            </Grid>
+                            <Grid item xs={12} lg={12}>
+                              <FormControl fullWidth>
+                                <Button
+                                  variant="outlined"
+                                  onClick={(e) => {
+                                    setPage(0);
+                                    setFilterForm(initialFilter);
+                                  }}
+                                >
+                                  Clear
+                                </Button>
+                              </FormControl>
+                            </Grid>
+                          </Grid>
+                        </AccordionDetails>
+                      </Accordion>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -296,12 +339,7 @@ const AccountBookDetail = () => {
               sx={{ marginTop: 0, padding: 0, height: "min-content" }}
             >
               {loading ? (
-                <Container
-                  component="main"
-                  sx={{ paddingY: 0, paddingX: 2, marginY: 10 }}
-                >
-                  <LinearProgress />
-                </Container>
+                <Loading />
               ) : (
                 <>
                   <Grid
@@ -323,7 +361,7 @@ const AccountBookDetail = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12} xl={12}>
-                          <TransactionTable
+                          <HoverableTransactionTable
                             transactions={transactions}
                             refreshForm={() => {
                               setRefresher(refresher + 1);
@@ -389,12 +427,36 @@ const AccountBookDetail = () => {
                     <Typography variant="h6">
                       Summary of your selected data
                     </Typography>
-                    <Divider />
-                    <Typography variant="p">Income VS Expenditure</Typography>
-                    <AccountBookPieChart
-                      incomes={getIncomes()}
-                      expenses={getExpenses()}
-                    />
+                    <Accordion
+                      defaultExpanded={
+                        localStorage.getItem(
+                          "IncomeVSExpenseAccordionStatus"
+                        ) == "true"
+                      }
+                      sx={{ marginTop: "5px" }}
+                      onChange={(event, expanded) => {
+                        localStorage.setItem(
+                          "IncomeVSExpenseAccordionStatus",
+                          expanded
+                        );
+                      }}
+                    >
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="summary Header"
+                      >
+                        <Typography variant="p">
+                          Income VS Expenditure
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <AccountBookPieChart
+                          incomes={getIncomes()}
+                          expenses={getExpenses()}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
                   </>
                 )}
               </Grid>

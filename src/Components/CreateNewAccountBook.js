@@ -46,14 +46,15 @@ export default function AlertDialogSlide() {
               console.log(err);
             });
           setOpen(false);
+          createNewAccountBookForm.resetForm();
+          setSubmitting(false);
         })
         .catch((err) => {
           toast.error(Object.values(err.response.data)[0][0], {
             position: toast.POSITION.BOTTOM_CENTER,
           });
+          setSubmitting(false);
         });
-      createNewAccountBookForm.resetForm();
-      setSubmitting(false);
     },
     validationSchema: NewAccountBookSchema,
   });

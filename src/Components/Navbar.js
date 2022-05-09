@@ -16,7 +16,10 @@ import ProfileCard from "./ProfileCard";
 import { host } from "../AxiosInstance";
 import { green } from "@mui/material/colors";
 
-const UserMenu = [{ name: "Logout ?", to: "/logout" }];
+const UserMenu = [
+  { name: "My Account Books", to: "/" },
+  { name: "Logout ?", to: "/logout" },
+];
 
 const NavMenu = [
   // { name: "Helps", to: "/helps" },

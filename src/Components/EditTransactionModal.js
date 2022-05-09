@@ -10,6 +10,7 @@ import {
 import AxiosInstance from "../AxiosInstance";
 import { useFormik } from "formik";
 import EditIcon from "@mui/icons-material/Edit";
+import * as Yup from "yup";
 
 export default function EditTransactionModal({
   account_book,
@@ -23,9 +24,17 @@ export default function EditTransactionModal({
     setOpen(true);
   };
   const handleClose = () => {
-    formik.handleReset();
+    updateTransactionForm.handleReset();
     setOpen(false);
   };
+
+  const editTransactionFormSchema = Yup.object().shape({
+    description: Yup.string().required("This field is required!"),
+    amount: Yup.number()
+      .moreThan(0, "Amount must be greater than 0.")
+      .required("This field is required!"),
+  });
+
   const HandleDelete = () => {
     AxiosInstance.delete(
       `expensetracker/account-books/${account_book}/transactions/${trans_id}/`,
@@ -40,9 +49,10 @@ export default function EditTransactionModal({
       .catch((err) => console.log(err));
   };
 
-  const formik = useFormik({
+  const updateTransactionForm = useFormik({
     initialValues: { description: description, amount: amount },
-    onSubmit: (values) => {
+    validationSchema: editTransactionFormSchema,
+    onSubmit: (values, { setSubmitting }) => {
       AxiosInstance.patch(
         `expensetracker/account-books/${account_book}/transactions/${trans_id}/`,
         values,
@@ -54,14 +64,18 @@ export default function EditTransactionModal({
           console.log(resp);
           handleClose();
           refreshForm();
+          setSubmitting(false);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setSubmitting(false);
+        });
     },
   });
 
   return (
     <div>
-      <Button disableElevation onClick={handleClickOpen} color="black">
+      <Button disableElevation onClick={handleClickOpen} sx={{ color: "#000" }}>
         <EditIcon />
       </Button>
       <Dialog
@@ -70,7 +84,7 @@ export default function EditTransactionModal({
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Edit Transaction</DialogTitle>
-        <form action="" onSubmit={formik.handleSubmit}>
+        <form action="" onSubmit={updateTransactionForm.handleSubmit}>
           <DialogContent>
             <TextField
               autoFocus
@@ -79,8 +93,8 @@ export default function EditTransactionModal({
               label="Description"
               type="text"
               fullWidth
-              onChange={formik.handleChange}
-              value={formik.values.description}
+              onChange={updateTransactionForm.handleChange}
+              value={updateTransactionForm.values.description}
               placeholder="Description"
             />
             <TextField
@@ -89,8 +103,8 @@ export default function EditTransactionModal({
               label="Amount"
               type="number"
               fullWidth
-              onChange={formik.handleChange}
-              value={formik.values.amount}
+              onChange={updateTransactionForm.handleChange}
+              value={updateTransactionForm.values.amount}
             />
           </DialogContent>
           <DialogActions>
@@ -100,7 +114,14 @@ export default function EditTransactionModal({
             <Button onClick={HandleDelete} color="primary">
               Delete
             </Button>
-            <Button onClick={formik.handleSubmit} color="primary">
+            <Button
+              onClick={updateTransactionForm.handleSubmit}
+              color="primary"
+              disabled={
+                updateTransactionForm.isSubmitting ||
+                !updateTransactionForm.isValid
+              }
+            >
               Update
             </Button>
           </DialogActions>

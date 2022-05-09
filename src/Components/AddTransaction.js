@@ -12,6 +12,7 @@ import { useFormik } from "formik";
 import Fab from "@mui/material/Fab";
 import { Add as AddIcon } from "@mui/icons-material";
 import Slide from "@mui/material/Slide";
+import * as Yup from "yup";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -28,13 +29,21 @@ export default function AddTransactionModal({
     setOpen(true);
   };
   const handleClose = () => {
-    formik.handleReset();
+    addTransactionForm.handleReset();
     setOpen(false);
   };
 
-  const formik = useFormik({
+  const addTransactionFormSchema = Yup.object().shape({
+    description: Yup.string().required("This field is required!"),
+    amount: Yup.number()
+      .required("This field is required!")
+      .moreThan(0, "Amount must be greater than 0."),
+  });
+
+  const addTransactionForm = useFormik({
     initialValues: { description: "", amount: 0, _type: _type },
-    onSubmit: (values) => {
+    validationSchema: addTransactionFormSchema,
+    onSubmit: (values, { setSubmitting }) => {
       AxiosInstance.post(
         `expensetracker/account-books/${account_book}/transactions/`,
         values,
@@ -43,10 +52,15 @@ export default function AddTransactionModal({
         }
       )
         .then((resp) => {
+          setSubmitting(false);
           handleClose();
           refreshForm();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          setSubmitting(false);
+          console.log(err.response);
+          addTransactionForm.setErrors(err.response);
+        });
     },
   });
 
@@ -77,7 +91,7 @@ export default function AddTransactionModal({
         <DialogTitle id="form-dialog-title">
           Add {_type === "DEBIT" ? "Income" : "Expense"} Transaction
         </DialogTitle>
-        <form action="" onSubmit={formik.handleSubmit}>
+        <form action="" onSubmit={addTransactionForm.handleSubmit}>
           <DialogContent>
             <TextField
               autoFocus
@@ -86,9 +100,17 @@ export default function AddTransactionModal({
               label="Description"
               type="text"
               fullWidth
-              onChange={formik.handleChange}
-              value={formik.values.description}
+              onChange={addTransactionForm.handleChange}
+              value={addTransactionForm.values.description}
               placeholder="Description"
+              error={
+                addTransactionForm.touched.description &&
+                Boolean(addTransactionForm.errors.description)
+              }
+              helperText={
+                addTransactionForm.touched.description &&
+                addTransactionForm.errors.description
+              }
             />
             <TextField
               margin="dense"
@@ -96,15 +118,29 @@ export default function AddTransactionModal({
               label="Amount"
               type="number"
               fullWidth
-              onChange={formik.handleChange}
-              value={formik.values.amount}
+              onChange={addTransactionForm.handleChange}
+              value={addTransactionForm.values.amount}
+              error={
+                addTransactionForm.touched.amount &&
+                Boolean(addTransactionForm.errors.amount)
+              }
+              helperText={
+                addTransactionForm.touched.amount &&
+                addTransactionForm.errors.amount
+              }
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={formik.handleSubmit} color="primary">
+            <Button
+              onClick={addTransactionForm.handleSubmit}
+              color="primary"
+              disabled={
+                addTransactionForm.isSubmitting || !addTransactionForm.isValid
+              }
+            >
               {_type === "DEBIT" ? "Add Income" : "Add Expense"}
             </Button>
           </DialogActions>
