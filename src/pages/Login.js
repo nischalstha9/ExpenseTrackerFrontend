@@ -56,10 +56,11 @@ export default function Login() {
           history.push("/helps");
         })
         .catch((err) => {
-          toast.error(Object.values(err.response.data)[0][0], {
-            position: toast.POSITION.BOTTOM_CENTER,
-          });
           setSubmitting(false);
+          toast.error(
+            Object.values(err.response.data)[0][0] ||
+              "Network Error! Try Again!!"
+          );
         });
     },
     validationSchema: LoginSchema,

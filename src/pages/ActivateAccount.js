@@ -73,6 +73,7 @@ export default function ActivateAccount() {
               </Grid>
             </Grid>
             <Button
+              onClick={activateAccountForm.handleSubmit}
               type="submit"
               fullWidth
               variant="contained"

@@ -3,7 +3,7 @@ import axios from "axios";
 export const cancelTokenSource = axios.CancelToken.source();
 
 // export const host = "http://localhost:8000";
-export const host = "http://expensetracker.com";
+export const host = process.env.REACT_APP_BACKEND_URL;
 const baseURL = host + "/api/v1/";
 const AxiosInstance = axios.create({
   baseURL: baseURL,
@@ -44,15 +44,13 @@ AxiosInstance.interceptors.response.use(
   },
   function (error) {
     const originalRequest = error.config;
-
     if (error.response.status === 401 && originalRequest.url === refreshPath) {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
       alert("Session Expired! Please Login Again!");
-      window.location.pathname = "/login";
+      // window.location.pathname = "/login";
       // return Promise.reject(error);
     }
-
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       return AxiosInstance.post("auth/token/refresh/").then((res) => {
